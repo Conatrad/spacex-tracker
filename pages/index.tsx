@@ -1,13 +1,17 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
+import { Inter, Lancelot } from '@next/font/google'
 import styles from '../styles/Home.module.css'
 import { lutimes } from 'fs/promises'
+import Date from '../components/date';
+
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({ launches }: any) {
- 
+
+ const launchArray = launches.results;
+console.log(launches)
   return (
     <>
       <Head>
@@ -19,14 +23,20 @@ export default function Home({ launches }: any) {
       <main className={styles.main}>
         <div>
           <h1>Upcoming Launches</h1>
-          <ul>
-              {launches.map((launch: any) => (
+          { <ul>
+              {launchArray.map((launch: any) => (
                 <li className={styles.card} key={launch.id}>
-                  <h2>{launch.name}</h2>
-                  <p> Launch Date:{launch.date_local}</p>
+                   <h2>{launch.name}</h2>
+                    <h4>
+                      {launch.launch_service_provider.name}
+                    </h4>  
+                    <Date dateString={launch.window_start}></Date>
+                    <p className={styles.description}>
+                      Launch Description: {launch.mission.description}
+                    </p>
                 </li>
               ))}
-            </ul>
+            </ul>}
         </div>
       </main>
     </>
@@ -34,8 +44,16 @@ export default function Home({ launches }: any) {
 }
 
 export async function getServerSideProps(){
+  //Rocket Launch API v
 
-  const res = await fetch('https://api.spacexdata.com/v4/launches/upcoming');
+  // const requestOptions = {
+  //   headers: { 'Authorization': `Bearer ${process.env.API_KEY}` }
+  // };
+  // const res = await fetch('https://fdo.rocketlaunch.live/json/launches', requestOptions);
+
+  //The Space Devs API v
+  
+  const res = await fetch('https://lldev.thespacedevs.com/2.2.0/launch/upcoming/');
   const launches = await res.json();
 
     return{
